@@ -4138,7 +4138,7 @@ const action_bn_debug = tiled.registerAction("cte_bn_debug", function (action_bn
     
     tiled.log(`debug finished`)
 });
-action_configureCTE.text = "Configure CTE"
+action_configureCTE.text = "Configure BN extension (BN path, import tileset)"
 action_createNewMap.text = "Create new BN map"
 action_newBNGroupLayer.text = "Add new om_terrain to map"
 action_importMap.text = "Import BN map"
@@ -4158,30 +4158,20 @@ action_bn_debug.shortcut = "CTRL+D"
 
 //tiled.log(tiled.menus)
 tiled.registerMapFormat("bn map", BNMapFormat)
-tiled.extendMenu("File", [
+tiled.extendMenu("BN", [
+    { action: "cte_configureCTE" },
     { separator: true },
-    { action: "cte_importMap", before: "Close" },
-    { action: "cte_createNewMap", before: "Close" },
-    { separator: true }
-]);
-tiled.extendMenu("Map", [
+    { action: "cte_createNewMap" },
+    { action: "cte_newBNGroupLayer" },
+    { action: "cte_importMap" },
+    { action: "cte_BN_map_exportMap" },
     { separator: true },
-    { action: "cte_newBNGroupLayer", after: "Terrain Sets" },
-    { action: "cte_bn_unicode_set_toggle", after: "Terrain Sets" },
-    { separator: true }
-]);
-tiled.extendMenu("Edit", [
+    { action: "cte_BN_map_findTileInTileset" },
+    { action: "cte_BN_add_sprite_to_favotires" },
     { separator: true },
-    { action: "cte_BN_map_findTileInTileset", before: "Cut" },
-    { action: "cte_BN_add_sprite_to_favotires", before: "Cut" },
-    { action: "cte_configureCTE", before: "Preferences" },
-    { separator: true }
-]);
-tiled.extendMenu("Help", [
-    { separator: true },
-    { action: "cte_bn_verbose", after: "Terrain Sets" },
-    { action: "cte_bn_debug", after: "Terrain Sets" },
-    { separator: true }
+    { action: "cte_bn_verbose" },
+    { action: "cte_bn_unicode_set_toggle" },
+    { action: "cte_bn_debug" },
 ]);
 
 const b64images = {
