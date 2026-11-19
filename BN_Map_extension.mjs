@@ -1124,28 +1124,10 @@ function importTileset(pathToChosenTileset) {
         //offsets
         (typeof j['tiles-new'][i]['sprite_offset_x'] == 'number') ? jts.xOffset = j['tiles-new'][i]['sprite_offset_x'] : jts.xOffset = 0;
         (typeof j['tiles-new'][i]['sprite_offset_y'] == 'number') ? jts.yOffset = j['tiles-new'][i]['sprite_offset_y'] : jts.yOffset = 0;
-        if (j['tiles-new'][i].hasOwnProperty("//")) {
-            jts.range = [Number(j['tiles-new'][i]['//'].match(/\d+/)[0]), Number(j['tiles-new'][i]['//'].match(/\d+$/)[0])]
-            let localIDRange = jts.range[1] - jts.range[0]
-        } else {
-            // BN tilesets without a "//" range comment: derive the sprite range
-            // from the fg/bg sprite indices used by the tiles in this entry
-            let min = Infinity, max = -Infinity;
-            let collect = (v) => {
-                if (typeof v == 'number') { if (v < min) { min = v; } if (v > max) { max = v; } }
-                else if (Array.isArray(v)) { v.forEach(collect); }
-                else if (v && typeof v == 'object' && typeof v.sprite != 'undefined') { collect(v.sprite); }
-            };
-            for (let tile of j['tiles-new'][i]['tiles']) {
-                collect(tile['fg']); collect(tile['bg']);
-                if (Array.isArray(tile['additional_tiles'])) {
-                    for (let st of tile['additional_tiles']) { collect(st['fg']); collect(st['bg']); }
-                }
-            }
-            if (min === Infinity) { min = 0; max = 0; }
-            jts.range = [min, max];
-            if (verbose >= 1) { tiled.log(`no "//" range in '${jts.name}', derived sprite range: ${jts.range[0]} - ${jts.range[1]}`); }
-        }
+        // BN assigns sprite indices globally: each tiles-new image contributes
+        // its tile count to a running offset (cata_tiles.cpp: 'offset += size').
+        // spriteRanges is computed in importTileset() before this loop runs.
+        jts.range = spriteRanges[i];
 
         if (verbose >= 2) { tiled.log(`tileset dimensions: ${jts.width}, ${jts.height}`); };
         if (verbose >= 2) { tiled.log(`tileset range: ${jts.range[0]} - ${jts.range[1]}`); };
@@ -1193,6 +1175,23 @@ function importTileset(pathToChosenTileset) {
     var tilesetInfoPixelscale = j.tile_info[0].pixelscale
 
     tiled.log(`Importing '${config.chosen_tileset}' with dimensions w:${tilesetInfoWidth} h:${tilesetInfoHeight} pixelscale:${tilesetInfoPixelscale}`)
+
+    // Compute global sprite ranges per tiles-new entry, the same way BN does:
+    // each image contributes (imgW/spriteW)*(imgH/spriteH) sprites to a running offset.
+    let spriteRanges = [];
+    {
+        let runningOffset = 0;
+        for (let i in j['tiles-new']) {
+            let e = j['tiles-new'][i];
+            let sw = (typeof e.sprite_width == 'number') ? e.sprite_width : tilesetInfoWidth;
+            let sh = (typeof e.sprite_height == 'number') ? e.sprite_height : tilesetInfoHeight;
+            let im = new Image();
+            im.load(`${config.path_to_chosen_bn_tileset_files}/${e.file}`);
+            let count = Math.floor(im.width / sw) * Math.floor(im.height / sh);
+            spriteRanges[i] = [runningOffset, runningOffset + count - 1];
+            runningOffset += count;
+        }
+    }
 
     //iterate over tilset config file entries
 
