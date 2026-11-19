@@ -971,11 +971,13 @@ function importTileset(pathToChosenTileset) {
             let bn_IDs = []
             if (tile["animated"]) {
                 tiled.log(`is animated`)
-                for (let subtile of tile['fg']) {
-                    for (let subtile in tile['fg']) {
-                        if (typeof tile['fg'][subtile] != 'number') {
-                            bn_IDs.push(tile['fg'][subtile]['sprite'])
-                        }
+                let fg = tile['fg'];
+                if (typeof fg == 'number') {
+                    bn_IDs.push(fg);
+                } else if (Array.isArray(fg)) {
+                    for (let subtile of fg) {
+                        if (typeof subtile == 'number') { bn_IDs.push(subtile); }
+                        else if (subtile && typeof subtile == 'object' && typeof subtile['sprite'] != 'undefined') { bn_IDs.push(subtile['sprite']); }
                     }
                 }
             }
