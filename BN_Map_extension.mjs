@@ -1151,6 +1151,7 @@ function importTileset(pathToChosenTileset) {
         let img = new Image(jts.name);
         let path_to_chosen_bn_tileset_files = `${config.path_to_chosen_bn_tileset_files}/${imgFile}`
         img.load(path_to_chosen_bn_tileset_files);
+        tiled.log(`image '${imgFile}' loaded: ${img.width}x${img.height} from '${path_to_chosen_bn_tileset_files}'`);
         if (verbose >= 2) { tiled.log(`Image is ${img.width} by ${img.height} - ${path_to_chosen_bn_tileset_files}`); };
 
         //load tilesheet image into tilesheet (source not embed)
@@ -1203,7 +1204,7 @@ function importTileset(pathToChosenTileset) {
         if (verbose >= 2) { tiled.log(`Preparing to write ${(ts.isTileset) ? `tilesheet` : `not a tilesheet`} '${ts.name}' to '${path_to_tilesetsFile}'`); };
         // let outputFileResults = writeToFile(path_to_tilesetsFile,ts);
         let outputFileResults = tiled.tilesetFormat("json").write(ts, path_to_tilesetsFile)
-        // (outputFileResults == null) ? tiled.log(ts.name + " file created successfully.") : tiled.log(`FAILED to create file at '${path_to_tilesetsFile}'' - Error: ${outputFileResults}`)
+        tiled.log((outputFileResults == null) ? `${ts.name}.tsj written OK (${ts.tileCount} tiles)` : `FAILED to write '${path_to_tilesetsFile}' - Error: ${outputFileResults}`)
         tiled.log('-------------------TSJ DONE-------------------')
 
     }
