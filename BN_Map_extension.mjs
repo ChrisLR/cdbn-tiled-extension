@@ -4158,7 +4158,8 @@ action_bn_debug.shortcut = "CTRL+D"
 
 //tiled.log(tiled.menus)
 tiled.registerMapFormat("bn map", BNMapFormat)
-tiled.extendMenu("BN", [
+tiled.extendMenu("Map", [
+    { separator: true },
     { action: "cte_configureCTE" },
     { separator: true },
     { action: "cte_createNewMap" },
