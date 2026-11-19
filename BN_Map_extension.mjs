@@ -1127,6 +1127,24 @@ function importTileset(pathToChosenTileset) {
         if (j['tiles-new'][i].hasOwnProperty("//")) {
             jts.range = [Number(j['tiles-new'][i]['//'].match(/\d+/)[0]), Number(j['tiles-new'][i]['//'].match(/\d+$/)[0])]
             let localIDRange = jts.range[1] - jts.range[0]
+        } else {
+            // BN tilesets without a "//" range comment: derive the sprite range
+            // from the fg/bg sprite indices used by the tiles in this entry
+            let min = Infinity, max = -Infinity;
+            let collect = (v) => {
+                if (typeof v == 'number') { if (v < min) { min = v; } if (v > max) { max = v; } }
+                else if (Array.isArray(v)) { v.forEach(collect); }
+                else if (v && typeof v == 'object' && typeof v.sprite != 'undefined') { collect(v.sprite); }
+            };
+            for (let tile of j['tiles-new'][i]['tiles']) {
+                collect(tile['fg']); collect(tile['bg']);
+                if (Array.isArray(tile['additional_tiles'])) {
+                    for (let st of tile['additional_tiles']) { collect(st['fg']); collect(st['bg']); }
+                }
+            }
+            if (min === Infinity) { min = 0; max = 0; }
+            jts.range = [min, max];
+            if (verbose >= 1) { tiled.log(`no "//" range in '${jts.name}', derived sprite range: ${jts.range[0]} - ${jts.range[1]}`); }
         }
 
         if (verbose >= 2) { tiled.log(`tileset dimensions: ${jts.width}, ${jts.height}`); };
