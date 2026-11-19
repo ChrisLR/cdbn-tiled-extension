@@ -1447,6 +1447,7 @@ function importMaps(filepath,maps){
             xy = map.object.mapgensize
         }
         if (map.type != "mapgen" || map.method != "json") { continue; } // must be mapgen and json
+        if (xy === undefined) { continue; }
         if (xy[0] > mapwidth) { mapwidth = xy[0] }
         if (xy[1] > mapheight) { mapheight = xy[1] }
 
@@ -1564,6 +1565,7 @@ function importMaps(filepath,maps){
             return objectGroup;
         }
     }
+    if (tm === undefined) { return tiled.log(`No valid mapgen entries to import in this file.`); }
     let layergroups = [];
     const new_allTileDict = {}
 
@@ -2862,6 +2864,7 @@ Don't forget to SAVE YOUR MAP`
                 testentries.push(mapEntriesToImport[entry].index)
             }
         }
+        if (chosenEntries.length === 0) { tiled.log(`No maps selected to import.`); return; }
         cont = true
         importMap(selectedMapPath, chosenEntries);
     })
@@ -2898,6 +2901,7 @@ function importMap(filepath, j) {
             xy = j[i].object.mapgensize
         }
         if (j[i].type != "mapgen" || j[i].method != "json") { continue; } // must be mapgen and json
+        if (xy === undefined) { continue; }
         if (xy[0] > mapwidth) { mapwidth = xy[0] }
         if (xy[1] > mapheight) { mapheight = xy[1] }
         if (j[i].hasOwnProperty("om_terrain")) {
@@ -2910,6 +2914,7 @@ function importMap(filepath, j) {
         break;
     }
 
+    if (tm === undefined) { return tiled.log(`No valid mapgen entries to import in this file.`); }
     let layergroups = [];
 
     for (let i in j) {
