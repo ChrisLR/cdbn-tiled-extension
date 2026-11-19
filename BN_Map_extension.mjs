@@ -365,7 +365,10 @@ const cte = { // helper functions
      * @returns {boolean} - true if path is a file, false if path is a directory.
      */
     isFile: (path) => {
-        return File.directoryEntries(`${FileInfo.path(cte.removeFileStringFromFileUrl(path))}/..`, 0x002 | 0x2000 | 0x4000).includes(path)
+        let p = cte.removeFileStringFromFileUrl(path).replace(/\/{2,}/g, "/");
+        if (!File.exists(p)) { return false; }
+        let parent = FileInfo.path(p);
+        return File.directoryEntries(parent, 0x002 | 0x2000 | 0x4000).some(e => FileInfo.fileName(e) === FileInfo.fileName(p));
     },
     /**
      * 
@@ -449,7 +452,7 @@ const cte = { // helper functions
         if (tiled.platform === "windows") {
             return path.toString().replace(/^file\:\/\/\//, "");
         } else {
-            return path.toString().replace(/^file\:\//, "");
+            return path.toString().replace(/^file:\/\//, "").replace(/^\/{2,}/, "/");
         }
     },
     /**
