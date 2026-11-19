@@ -2682,7 +2682,12 @@ Don't forget to SAVE YOUR MAP`
         });
         checkboxes = [];
         pageNum = 0; // Reset page number
-        readImportMapFile(selectedMapPath);
+        if (cte.isFile(selectedMapPath)) {
+            readImportMapFile(selectedMapPath);
+        } else {
+            mapEntriesToImport = {};
+            tiled.log(`selected path is a folder, pick a map file`);
+        }
         createPlaceholders(); // Create new placeholders
         showPage(pageNum);
     }
