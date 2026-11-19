@@ -849,6 +849,7 @@ function addBnIdToUnknowns(bn_id) {
     // make unknowns tileset if it doesn't exist
     let unknowns;
     if (!File.exists(config.path_to_unknowns_tileset)) {
+        if (!File.exists(config.path_to_chosen_tileset_files)) { File.makePath(config.path_to_chosen_tileset_files); }
         unknowns = new Tileset("unknowntiles");
         tiled.tilesetFormat("tsx").write(unknowns, config.path_to_unknowns_tileset);
     }
